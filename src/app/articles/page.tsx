@@ -3,6 +3,7 @@ import React from "react";
 
 // Next Imports
 import Link from "next/link";
+import { Metadata } from "next";
 // import Image from "next/image";
 
 // Constants
@@ -13,6 +14,33 @@ import { fetchArticlesByBrand } from "@/data/getPosts";
 
 // Types
 import { Article, ArticleResponse } from "@/types";
+import { getTagMetadataBySlug } from "@/data/getMetadata";
+
+export type Props = {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+};
+
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const searchParams = await props.searchParams;
+  let tagName = searchParams.tag || null;
+
+  if (Array.isArray(tagName)) {
+    tagName = tagName[0];
+  }
+
+  if (tagName) {
+    const tagMetadata = await getTagMetadataBySlug(tagName);
+    return tagMetadata;
+  } else {
+    return {
+      title: "Articles",
+      description: "Articles",
+    };
+  }
+}
+
+// read route params ge
 
 function ArticleCard({ post }: { post: Article }) {
   return (

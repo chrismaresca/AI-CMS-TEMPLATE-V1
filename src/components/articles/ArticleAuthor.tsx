@@ -41,12 +41,12 @@ export function ArticleAuthor({ author }: { author: Author }) {
         <dt className="mb-2 text-sm font-bold text-gray-900 uppercase dark:text-white">I Was Created On:</dt>
         <dd className="text-sm text-gray-500 dark:text-gray-400">{new Date(author.dateCreated).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</dd>
       </dl>
-      <div className="block">
+      {/* <div className="block">
         <Button className="w-full text-sm font-medium">
           <Plus />
           Follow
         </Button>
-      </div>
+      </div> */}
     </div>
   );
 }

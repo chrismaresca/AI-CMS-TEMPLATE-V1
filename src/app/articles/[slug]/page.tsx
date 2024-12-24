@@ -46,6 +46,29 @@ export async function generateStaticParams(): Promise<{ slug: string }[]> {
 
 // export const experimental_ppr = true;
 
+export async function generateMetadata({ params: paramsPromise }: NextParams) {
+  const { slug = "" } = await paramsPromise;
+
+  const postObject = await fetchArticleBySlug(slug);
+  const post = postObject.docs[0];
+
+  return {
+    title: post.title,
+    description: post.excerpt,
+    openGraph: {
+      title: post.title,
+      description: post.excerpt,
+    },
+    twitter: {
+      title: post.title,
+      description: post.excerpt,
+    },
+    alternates: {
+      canonical: `/articles/${post.slug}`,
+    },
+  };
+}
+
 export default async function BlogPost({ params: paramsPromise }: NextParams) {
   const { slug = "" } = await paramsPromise;
   const postObject: ArticleResponse | null = await fetchArticleBySlug(slug);
@@ -61,10 +84,10 @@ export default async function BlogPost({ params: paramsPromise }: NextParams) {
   const mainTagName = post.tags?.[0]?.tag?.name ?? "No tags found";
 
   return (
-    <main className="pt-8 pb-16 lg:pt-16 lg:pb-24">
-      <div className="flex justify-between px-8 lg:px-4 2xl:px-0 mx-auto max-w-screen-xl ">
+    <div className="pt-8 pb-16 lg:pt-16 lg:pb-24">
+      <div className="flex justify-between px-10 lg:px-4 2xl:px-0 mx-auto max-w-screen-xl ">
         {/* Start Article */}
-        <article className="mx-auto w-full max-w-2xl format format-sm sm:format-base lg:format-lg format-blue dark:format-invert font-mono">
+        <article className="mx-auto w-full max-w-[48rem] format format-sm sm:format-base lg:format-lg format-blue dark:format-invert font-mono">
           {/* Start Article Header */}
           <ArticleHeader title={post.title} author={post.author} date={post.dateUpdated} mainTagName={mainTagName} />
           {/* End Article Header */}
@@ -75,12 +98,20 @@ export default async function BlogPost({ params: paramsPromise }: NextParams) {
 
           {/* Start Article Content */}
           <CustomMDX source={post.content} />
+
+          {/* Start Article Tags */}
+          <div className="xl:hidden pt-12">
+            <ArticleTags />
+          </div>
+          {/* End Article Tags */}
+
           {/* End Article Content */}
         </article>
+        
         {/* End Article */}
 
         {/* Start Sidebar */}
-        <aside className="hidden lg:block lg:w-[300px] xl:w-[400px]" aria-labelledby="sidebar-label">
+        <aside className="hidden xl:block xl:w-[400px]" aria-labelledby="sidebar-label">
           <div className="sticky top-6">
             <h3 id="sidebar-label" className="sr-only">
               Sidebar
@@ -102,6 +133,6 @@ export default async function BlogPost({ params: paramsPromise }: NextParams) {
         </aside>
         {/* End Sidebar */}
       </div>
-    </main>
+    </div>
   );
 }

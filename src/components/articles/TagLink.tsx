@@ -26,7 +26,7 @@ function TagLink({ tag }: { tag: Tag }) {
 
   return (
     <Link key={tag.slug} href={`${basePath}?${queryString}`} passHref>
-      <Badge className="cursor-pointer hover:bg-primary-200 hover:text-primary-900 dark:hover:bg-primary-300 dark:hover:text-primary-800 text-sm font-medium mr-3 px-2.5 py-0.5 mb-3">
+      <Badge className="cursor-pointer hover:bg-primary-200 hover:text-primary-900 dark:hover:bg-primary-300 dark:hover:text-primary-800 text-xs font-medium mr-3 px-2.5 py-0.5 mb-3">
         {tag.name}
       </Badge>
     </Link>

@@ -1,4 +1,4 @@
-# Test Client for Content Strategy
+# Client for Content Strategy
 
 ## Getting Started
 
@@ -15,5 +15,3 @@ Run the project in development mode with `pnpm dev`.
 ## Building the project
 
 Build the project with `pnpm build` and run it with `pnpm start`.
-
-
