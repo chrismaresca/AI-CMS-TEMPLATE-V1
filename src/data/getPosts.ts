@@ -25,6 +25,9 @@ export async function fetchArticlesByBrand(brandId: string): Promise<ArticleResp
     headers: {
       "Content-Type": "application/json",
     },
+    next: {
+      revalidate: 1800,
+    },
   });
 
   if (!response.ok) {
@@ -57,8 +60,10 @@ export async function fetchArticleBySlug(slug: string): Promise<ArticleResponse>
     throw new Error(`Failed to fetch article: ${response.statusText}`);
   }
 
+
   return response.json();
 }
 
 // =====================================================================================================
 // =====================================================================================================
+

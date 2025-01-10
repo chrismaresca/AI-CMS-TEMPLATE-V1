@@ -3,3 +3,8 @@ export type NextParams = {
     slug?: string;
   }>;
 };
+
+export type NextParamsAndSearchParams = {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ [key: string]: string | undefined }>;
+};

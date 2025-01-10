@@ -1,17 +1,31 @@
-# Client for Content Strategy
+# Content Strategy Client 🚀
 
-## Getting Started
+A modern, performant client for managing and displaying your content strategy.
 
-Set up the environment variables by running `cp .env.example .env` and filling in the values for the BRAND_ID and POSTS_API_BASE_URL.
+## 🛠 Setup & Configuration
 
-### Update Styling
+### Environment Variables
 
-To update the styling of blog components, update `src/components/mdx/mdxComponents.tsx`.
+1. Create your environment file:
 
-## Running the project
+   ```bash
+   cp .env.example .env
+   ```
 
-Run the project in development mode with `pnpm dev`.
+2. Configure the following environment variables:
 
-## Building the project
+   ```env
+   POSTS_API_BASE_URL=<your-api-url>
+   BRAND_ID=<your-brand-id>
+   NEXT_PUBLIC_URL=<your-public-url>
 
-Build the project with `pnpm build` and run it with `pnpm start`.
+   # Social Links (Optional)
+   GITHUB_URL=<your-github-url>
+   LINKEDIN_URL=<your-linkedin-url>
+   X_URL=<your-x-url>
+   EMAIL=<your-email>
+   ```
+
+### 🎨 Customizing Styles
+
+The blog components' styling can be customized by modifying:

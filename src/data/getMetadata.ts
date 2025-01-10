@@ -11,11 +11,13 @@ import { BrandMetadata, TagMetadata } from "@/types";
  * @returns {Promise<Metadata>} A promise that resolves to the metadata for the brand.
  */
 export async function getBrandMetadata(brandId: string): Promise<Metadata> {
-  const metadataObject: BrandMetadata = await fetch(`${POSTS_API_BASE_URL}/api/metadata/brands/${brandId}`).then(
-    (response) => response.json()
-  );
+  const metadataObject: BrandMetadata = await fetch(`${POSTS_API_BASE_URL}/api/metadata/brands/${brandId}`).then((response) => response.json());
 
   const keywords = metadataObject.tags?.map((tag: { tag: { name: string } }) => tag.tag.name);
+
+  const ogImageUrl = metadataObject.ogImageUrl ? metadataObject.ogImageUrl : undefined;
+
+  const ogImages = ogImageUrl ? [{ url: ogImageUrl, alt: metadataObject.name, width: 1200, height: 630 }] : undefined;
 
   const brandMetadata: Metadata = {
     metadataBase: new URL(metadataObject.websiteUrl),
@@ -38,7 +40,7 @@ export async function getBrandMetadata(brandId: string): Promise<Metadata> {
     openGraph: {
       title: metadataObject.name,
       description: metadataObject.description,
-      images: metadataObject.image ? [metadataObject.image] : undefined,
+      images: ogImages,
       url: metadataObject.websiteUrl,
       siteName: metadataObject.name,
       type: "website",
@@ -49,7 +51,7 @@ export async function getBrandMetadata(brandId: string): Promise<Metadata> {
       card: "summary",
       title: metadataObject.name,
       description: metadataObject.description,
-      images: metadataObject.image ? [metadataObject.image] : undefined,
+      images: ogImages,
       site: `@${metadataObject.twitterHandle}`,
       creator: metadataObject.founder,
     },
@@ -67,9 +69,7 @@ export async function getBrandMetadata(brandId: string): Promise<Metadata> {
  * @returns {Promise<Metadata>} A promise that resolves to the metadata for the tag.
  */
 export async function getTagMetadataBySlug(slug: string): Promise<Metadata> {
-  const metadataObject: TagMetadata = await fetch(`${POSTS_API_BASE_URL}/api/metadata/tags/${slug}`).then((response) =>
-    response.json()
-  );
+  const metadataObject: TagMetadata = await fetch(`${POSTS_API_BASE_URL}/api/metadata/tags/${slug}`).then((response) => response.json());
 
   const tagMetadata: Metadata = {
     title: metadataObject.name,
@@ -92,4 +92,3 @@ export async function getTagMetadataBySlug(slug: string): Promise<Metadata> {
 
 // =====================================================================================================
 // =====================================================================================================
-

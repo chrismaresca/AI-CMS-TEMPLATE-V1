@@ -2,10 +2,11 @@ import type { Config } from "tailwindcss";
 
 import typography from "@tailwindcss/typography";
 import animate from "tailwindcss-animate";
+import tailwindcssMotion from "tailwindcss-motion";
 
 export default {
   darkMode: ["class"],
-  content: ["./src/pages/**/*.{js,ts,jsx,tsx,mdx}", "./src/components/**/*.{js,ts,jsx,tsx,mdx}", "./src/app/**/*.{js,ts,jsx,tsx,mdx}"],
+  content: ["./src/pages/**/*.{js,ts,jsx,tsx,mdx}", "./src/components/**/*.{js,ts,jsx,tsx,mdx}", "./src/app/**/*.{js,ts,jsx,tsx,mdx}", "./src/sections/**/*.{js,ts,jsx,tsx,mdx}"],
   theme: {
     extend: {
       fontFamily: {
@@ -61,5 +62,6 @@ export default {
       },
     },
   },
-  plugins: [typography, animate],
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  plugins: [typography, animate, tailwindcssMotion, require("tailwindcss-intersect")],
 } satisfies Config;

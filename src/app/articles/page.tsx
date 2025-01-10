@@ -1,89 +1,85 @@
-// React Imports
+// React and Next Imports
 import React from "react";
-
-// Next Imports
-import Link from "next/link";
 import { Metadata } from "next";
-// import Image from "next/image";
 
 // Constants
-import { BRAND_ID } from "@/constants";
+import { ARTICLES_DEFAULT_METADATA, ARTICLES_DESC, ARTICLES_MOBILE_TITLE, ARTICLES_TITLE, BRAND_ID } from "@/constants";
 
-// Data
+// Data Fetching
 import { fetchArticlesByBrand } from "@/data/getPosts";
-
-// Types
-import { Article, ArticleResponse } from "@/types";
+import { fetchTagsByBrand } from "@/data/getTags";
 import { getTagMetadataBySlug } from "@/data/getMetadata";
 
-export type Props = {
-  params: Promise<{ id: string }>;
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
-};
+// Types
+import { Article, Tag, ArticleResponse, NextParamsAndSearchParams, TagResponse } from "@/types";
 
-export async function generateMetadata(props: Props): Promise<Metadata> {
+// Components
+import ArticleListClient from "@/sections/articles/ArticlesList.client";
+
+// -----------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------
+// Metadata
+
+export async function generateMetadata(props: NextParamsAndSearchParams): Promise<Metadata> {
   const searchParams = await props.searchParams;
-  let tagName = searchParams.tag || null;
-
-  if (Array.isArray(tagName)) {
-    tagName = tagName[0];
-  }
+  const tagName = searchParams.tags?.split(",").slice(-1)[0] || null;
 
   if (tagName) {
     const tagMetadata = await getTagMetadataBySlug(tagName);
     return tagMetadata;
   } else {
-    return {
-      title: "Articles",
-      description: "Articles",
-    };
+    return ARTICLES_DEFAULT_METADATA;
   }
 }
 
-// read route params ge
+// -----------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------
+// Background Grid
 
-function ArticleCard({ post }: { post: Article }) {
+function BackgroundGrid() {
   return (
-    <article className="flex flex-col bg-white border border-gray-200 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-200 ease-in-out">
-      {/* {post.image && (
-        <Link href={`/${post.slug}`} className="block">
-          <Image src={post.image} alt={post.title} className="w-full h-auto object-cover aspect-[16/9]" />
-        </Link> */}
-      <div className="p-4">
-        <h2 className="text-xl font-semibold mb-2">
-          <Link href={`/articles/${post.slug}`} className="text-gray-900 hover:underline">
-            {post.title}
-          </Link>
-        </h2>
-        {post.excerpt && <p className="text-gray-700 mb-4 line-clamp-3">{post.excerpt}</p>}
-        {post.dateUpdated && (
-          <time className="text-sm text-gray-500">Published on {new Date(post.dateUpdated).toLocaleDateString()}</time>
-        )}
-      </div>
-    </article>
+    <div
+      className="absolute inset-0 bg-[linear-gradient(to_right,#101010_1px,transparent_1px),linear-gradient(to_bottom,#101010_1px,transparent_1px)] bg-[size:4rem_4rem]"
+      style={{
+        maskImage: "radial-gradient(ellipse at center, black 20%, transparent 70%)",
+        WebkitMaskImage: "radial-gradient(ellipse at center, black 20%, transparent 70%)",
+      }}
+    />
   );
 }
 
-export default async function Page() {
+// -----------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------
+// Page
+
+export default async function ArticlesPage() {
   if (!BRAND_ID) {
-    throw new Error("BRAND_ID is not defined. Please define it as an environment variable.");
+    throw new Error("No brand ID found. You must set the BRAND_ID environment variable.");
   }
 
-  const postObjects: ArticleResponse = await fetchArticlesByBrand(BRAND_ID);
-  const posts = postObjects?.docs ?? [];
+  const articlesResponse: ArticleResponse = await fetchArticlesByBrand(BRAND_ID);
+  const tagsResponse: TagResponse = await fetchTagsByBrand(BRAND_ID);
+
+  const articleObjects: Article[] = articlesResponse?.docs ?? [];
+  const tagObjects: Tag[] = tagsResponse?.docs ?? [];
 
   return (
-    <div className="mx-auto max-w-screen-xl px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6">Latest Articles</h1>
-      {posts.length === 0 ? (
-        <p>No posts available.</p>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-          {posts.map((post) => (
-            <ArticleCard key={post.slug} post={post} />
-          ))}
+    <>
+      <div className="hidden lg:block">
+        <BackgroundGrid />
+      </div>
+      <div className="min-h-screen max-w-7xl sm:px-8 mt-16 sm:mt-32 mb-12">
+        <div className="relative px-4 sm:px-8 lg:px-12">
+          <div className="mx-auto max-w-2xl lg:max-w-5xl flex flex-col flex-grow">
+            <header className="mx-2 md:mx-0 md:max-w-[39rem] motion-ease-in motion-delay-[0ms] motion-duration-[500ms] motion-blur-in-sm">
+              <h1 className="hidden md:block text-4xl font-bold tracking-tighter text-zinc-800 dark:text-zinc-100 leading-[2.75rem] sm:leading-[3.5rem]">{ARTICLES_TITLE}</h1>
+              <h1 className="md:hidden text-2xl max-w-[28rem] font-bold tracking-tighter text-zinc-800 dark:text-zinc-100 leading-[2.5rem]">{ARTICLES_MOBILE_TITLE}</h1>
+              <p className="mt-6 text-base text-zinc-600 dark:text-zinc-400 tracking-tighter leading-7 mr-4"> {ARTICLES_DESC}</p>
+            </header>
+            <ArticleListClient articles={articleObjects} tags={tagObjects} />
+          </div>
         </div>
-      )}
-    </div>
+      </div>
+    </>
   );
 }

@@ -1,20 +1,26 @@
-// Base Imports
+// Next Imports
 import type { Metadata } from "next";
-import localFont from "next/font/local";
+
+// Analytics and Speed Insights
+import { Analytics } from "@vercel/analytics/next";
+ import { SpeedInsights } from "@vercel/speed-insights/next";
+
+// Fonts
+import { Geist, Geist_Mono } from "next/font/google";
+
+// Global Styles
 import "./globals.css";
-
-// Get Brand Metadata
 import { getBrandMetadata } from "@/data/getMetadata";
+import ObserverProvider from "@/lib/ObserverProvider";
 
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
+const geistSans = Geist({
   variable: "--font-geist-sans",
-  weight: "100 900",
+  subsets: ["latin"],
 });
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
+
+const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
-  weight: "100 900",
+  subsets: ["latin"],
 });
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -25,6 +31,7 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 
   const brandMetadata = await getBrandMetadata(brandId);
+
   return brandMetadata;
 }
 
@@ -34,8 +41,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="h-full dark">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>{children}</body>
-    </html>
+    <ObserverProvider>
+      <html lang="en">
+        <body className={`${geistSans.variable} ${geistMono.variable} antialiased dark bg-background font-mono`}>
+          <main className="max-w-7xl mx-auto">
+            {children}
+          </main>
+          <Analytics />
+          <SpeedInsights />
+        </body>
+      </html>
+    </ObserverProvider>
   );
 }

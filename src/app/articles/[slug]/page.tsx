@@ -1,11 +1,15 @@
 // Types
 import { NextParams, ArticleResponse } from "@/types";
 
+// Next Navigation
+import { notFound } from "next/navigation";
+
 // Article Components
 import {
   ArticleTags,
   ArticleHeader,
   ArticleAuthor,
+  FollowSocials,
   // ArticleReactions,
   // ArticleShare
 } from "@/components/articles";
@@ -58,6 +62,7 @@ export async function generateMetadata({ params: paramsPromise }: NextParams) {
     openGraph: {
       title: post.title,
       description: post.excerpt,
+      url: `/articles/${post.slug}`,
     },
     twitter: {
       title: post.title,
@@ -70,26 +75,30 @@ export async function generateMetadata({ params: paramsPromise }: NextParams) {
 }
 
 export default async function BlogPost({ params: paramsPromise }: NextParams) {
-  const { slug = "" } = await paramsPromise;
+  const { slug } = await paramsPromise;
+
+  if (!slug) {
+    notFound();
+  }
+
   const postObject: ArticleResponse | null = await fetchArticleBySlug(slug);
 
   const post = postObject.docs[0];
 
-  // TODO: Redirect to 404 if post is not found
 
   if (!post) {
-    throw new Error("Post not found");
+    notFound();
   }
 
-  const mainTagName = post.tags?.[0]?.tag?.name ?? "No tags found";
+  const mainTag = post.tags?.[0]?.tag ?? { name: "No tags found", slug: "no-tags-found" };
 
   return (
     <div className="pt-8 pb-16 lg:pt-16 lg:pb-24">
-      <div className="flex justify-between px-10 lg:px-4 2xl:px-0 mx-auto max-w-screen-xl ">
+      <div className="flex justify-between px-10 lg:px-4 2xl:px-0 mx-auto max-w-screen-xl motion-preset-slide-up-sm motion-duration-[2s] motion-ease-spring-smooth">
         {/* Start Article */}
-        <article className="mx-auto w-full max-w-[48rem] format format-sm sm:format-base lg:format-lg format-blue dark:format-invert font-mono">
+        <article className="mx-auto w-full max-w-[48rem] format format-sm sm:format-base lg:format-lg format-blue dark:format-invert font-sans">
           {/* Start Article Header */}
-          <ArticleHeader title={post.title} author={post.author} date={post.dateUpdated} mainTagName={mainTagName} />
+          <ArticleHeader title={post.title} author={post.author} date={post.dateUpdated} mainTagName={mainTag.name} mainTagSlug={mainTag.slug} />
           {/* End Article Header */}
 
           {/* Start Article Share */}
@@ -97,22 +106,26 @@ export default async function BlogPost({ params: paramsPromise }: NextParams) {
           {/* End Article Share */}
 
           {/* Start Article Content */}
-          <CustomMDX source={post.content} />
+          <div className="motion-ease-in">
+            <CustomMDX source={post.content} />
+          </div>
 
           {/* Start Article Tags */}
-          <div className="xl:hidden pt-12">
+          {/* <div className="xl:hidden pt-12"> */}
+          <div className="pt-16">
             <ArticleTags />
           </div>
+          {/* </div> */}
           {/* End Article Tags */}
 
           {/* End Article Content */}
         </article>
-        
+
         {/* End Article */}
 
         {/* Start Sidebar */}
         <aside className="hidden xl:block xl:w-[400px]" aria-labelledby="sidebar-label">
-          <div className="sticky top-6">
+          <div className="sticky top-24">
             <h3 id="sidebar-label" className="sr-only">
               Sidebar
             </h3>
@@ -127,8 +140,12 @@ export default async function BlogPost({ params: paramsPromise }: NextParams) {
             <ArticleAuthor author={post.author} />
             {/* End Author */}
 
+            {/* Start Follow Socials */}
+            <FollowSocials />
+            {/* End Follow Socials */}
+
             {/* Replace the Tags section with the new component */}
-            <ArticleTags />
+            {/* <ArticleTags /> */}
           </div>
         </aside>
         {/* End Sidebar */}

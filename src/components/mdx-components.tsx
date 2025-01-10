@@ -4,7 +4,7 @@ import { MDXRemote, MDXRemoteProps } from "next-mdx-remote/rsc";
 import Image from "next/image";
 
 // Components
-import { Test } from "@/components/blocks";
+import { Test } from "@/components/articles/blocks";
 
 type HeadingProps = React.HTMLAttributes<HTMLHeadingElement> & { children?: React.ReactNode };
 type ParagraphProps = React.HTMLAttributes<HTMLParagraphElement> & { children?: React.ReactNode };
